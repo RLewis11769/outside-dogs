@@ -1,0 +1,12 @@
+:root {
+	--bg-main: #1a1a1a;
+	--bg-secondary: #2b2b2b;
+	--primary-text: #fff;
+}
+
+body {
+	min-height: 100vh;
+	height: 100%;
+	background-color: var(--bg-main);
+	color: var(--primary-text);
+}

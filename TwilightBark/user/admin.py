@@ -5,7 +5,7 @@ from user.models import User
 
 
 class AccountAdmin(UserAdmin):
-    """ Define which User fields and how displayed in /admin panel """
+    """ Define which User fields shown and how displayed in /admin panel """
     list_display = ('email', 'username', 'date_joined', 'is_admin')
     search_fields = ('email', 'username')
     readonly_fields = ('id', 'date_joined')

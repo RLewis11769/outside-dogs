@@ -1,12 +1,11 @@
 :root {
-	--bg-main: #1a1a1a;
-	--bg-secondary: #2b2b2b;
-	--primary-text: #fff;
+	--color-main: rgb(41 37 36);
+	--color-secondary: rgb(28 25 23);
+	--color-pink: rgb(219 39 119);
 }
 
 body {
 	min-height: 100vh;
 	height: 100%;
-	background-color: var(--bg-main);
-	color: var(--primary-text);
+	background-color: var(--color-main);
 }

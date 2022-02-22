@@ -1,5 +1,4 @@
 {% extends 'TwilightBark/base.html' %}
-{% load static %}
 
 {% block content %}
 <main>
@@ -12,23 +11,21 @@
 
 			<!-- Input fields -->
 			<input type="email" name="email" id="inputEmail" class="my-1 max-w-xl rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Email address" required autofocus>
-			<input type="password" name="password" id="inputPassword" class="my-1 max-w-xl rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Confirm password" required>
+			<input type="password" name="password" id="inputPassword" class="my-1 max-w-xl rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Password" required>
 
 			<!-- Field input error handling/displaying -->
 			{% for field in login_form %}
-				<p>
-					{% for error in field.errors %}
-						<p class="py-2 text-red-700">{{ error }}</p>
-					{% endfor %}
-				</p>
+				{% for error in field.errors %}
+					<p class="py-2 text-red-700">{{ error }}</p>
+				{% endfor %}
 			{% endfor %}
 			<!-- General error handling -->
 			{% if login_form.non_field_errors %}
 				<p class="py-2 text-red-700">{{login_form.non_field_errors}}</p>
-		</div>
+			{% endif %}
 
-		{% endif %}
-		<button type="submit" class="my-1 py-2 max-w-xl rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800">Log In</button>
+			<button type="submit" class="my-1 py-2 max-w-xl rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Log In</button>
+		</div>
 	</form>
 </main>
 {% endblock %}

@@ -28,6 +28,7 @@ class AccountManager(BaseUserManager):
 
     def create_superuser(self, email, username, password):
         """ If user is defined as superuser, create user """
+        """ Only superuser/admin can use admin panel """
         if not email:
             raise ValueError('Users must have an email address')
         if not username:
@@ -48,6 +49,7 @@ class AccountManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     """ Defines user model to override default django user model """
+    """ Logging in with email rather than username """
 
     email = models.EmailField(verbose_name="email", max_length=60,
                               unique=True)
@@ -79,7 +81,7 @@ class User(AbstractBaseUser):
 
     # These are more default methods that need to be overridden
     def __str__(self):
-        """ """
+        """ When type {user}, prints username rather than address """
         return self.username
 
     def has_perm(self, perm, obj=None):

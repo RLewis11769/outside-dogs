@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from .forms import RegistrationForm, UserAuthenticationForm
+from .models import User
 from .utils import get_redirect_destination
 
 
@@ -73,3 +74,38 @@ def login_user(request, *args, **kwargs):
             context['login_form'] = form
     # Render form (either blank with {} context or with errors)
     return render(request, 'user/login.html', context)
+
+
+def user_account(request, *args, **kwargs):
+    """ Displays user account page - different for own page and other users """
+    context = {}
+    # Get id of user whose account is being viewed (own account or other user)
+    user_id = kwargs.get('user_id')
+    try:
+        # Try to get user based on id
+        account = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return HttpResponse(f'Account does not exist for user {user_id}')
+    if account:
+        # If successfully get user, get context to pass to template
+        context['id'] = account.id
+        context['email'] = account.email
+        context['username'] = account.username
+        context['profile_pic'] = account.profile_pic.url
+        context['hide_email'] = account.hide_email
+
+        # Define state (is it my account or someone else's, etc)
+        # Default is true (my account)
+        is_self = True
+        # Get user who is viewing account/making request
+        user = request.user
+        # If user and account are different, viewing someone else's account
+        if user.is_authenticated and user != account:
+            is_self = False
+        # If user is not logged in, obvs viewing someone else's account
+        elif not user.is_authenticated:
+            is_self = False
+        # Set is_self in context
+        context['is_self'] = is_self
+
+        return render(request, 'user/account.html', context)

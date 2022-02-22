@@ -1,12 +1,16 @@
 """ Match URLs to views for user app """
 from django.urls import path
-from .views import register_user, login_user, logout_user
+from .views import register_user, login_user, logout_user, user_account
 
 
-# Anything after user/ redirects here
-# When using {% url 'name' %} in templates, matches name here
+# Define name which links to namespace in TwilightBark/urls.py
+app_name = 'user'
+
+# Name used in templates as {% url 'user:url_name' %}
+# If didn't include namespace, would be {% url 'url_name' %}
 urlpatterns = [
     path('login/', login_user, name='login'),
     path('logout/', logout_user, name='logout'),
     path('register/', register_user, name='register'),
+    path('<user_id>/', user_account, name='account'),
 ]

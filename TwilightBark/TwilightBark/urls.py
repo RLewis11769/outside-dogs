@@ -15,11 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-# from user.views import register_view
-from . import views
+from .views import index
 
+
+# Anything after domain name is sent here
+# Anything after urlpattern is sent to urls.py page referenced
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
-    path('user/', include('user.urls')),
+    path('', index, name='index'),
+    # namespace is used to define/indiviudalize urls
+    # Referenced in templates as {% url 'namespace:url_name' %}
+    path('user/', include('user.urls', namespace='user')),
 ]

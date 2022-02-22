@@ -36,7 +36,7 @@
 						<span class="px-4 block text-sm">NAME</span>
 						<span class="px-4 pb-2 block text-sm">EMAIL</span>
 						<a href="#" class="px-4 py-2 block hover:bg-pink-800 transition duration-500">Account</a>
-						<a href="#" class="px-4 py-2 block hover:bg-pink-800 transition duration-500">Logout</a>
+						<a href={% url 'logout' %} class="px-4 py-2 block hover:bg-pink-800 transition duration-500">Logout</a>
 					</div>
 				</div>
 			</div>
@@ -44,10 +44,10 @@
 			{% else %}
 			<div class="flex justify-center space-x-6 flex-row">
 				<p class="text-xl">
-					<a href="#" class="text-stone-800 hover:text-pink-600 duration-500">Login</a>
+					<a href={% url 'login' %} class="text-stone-800 hover:text-pink-600 duration-500">Login</a>
 				</p>
 				<button class="text-xl">
-					<a href="{% url 'register' %}" class="py-2 px-4 bg-transparent border border-stone-800 rounded text-stone-800 font-bold hover:bg-pink-600 hover:border-pink-600 hover:text-teal-500 duration-500">Register</a>
+					<a href={% url 'register' %} class="py-2 px-4 bg-transparent border border-stone-800 rounded text-stone-800 font-bold hover:bg-pink-600 hover:border-pink-600 hover:text-teal-500 duration-500">Register</a>
 				</button>
 			</div>
 			{% endif %}

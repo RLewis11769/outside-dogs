@@ -9,22 +9,22 @@
 		</div>
 		<div class="flex flex-col items-center w-full">
 			<h1 class="mt-4 mb-1">Email</h1>
-				{%  if is_self %}
-					<p class="font-normal">{{email}}</p>
+			{%  if is_self %}
+				<p class="font-normal">{{email}}</p>
+			{% else %}
+				{% if hide_email %}
+					<p class="font-normal">**********</p>
 				{% else %}
-					{% if hide_email %}
-						<p class="font-normal">**********</p>
-					{% else %}
-						<p class="font-normal">{{email}}</p>
-					{% endif %}
+					<p class="font-normal">{{email}}</p>
 				{% endif %}
+			{% endif %}
 			<h1 class="mt-4 mb-1">Username</h1>
 			<p class="mb-5 font-normal"">{{username}}</p>
 
 			<!-- If Auth user is viewing their own profile -->
 			{% if is_self %}
-			<button class="mt-4 py-2 w-1/3 font-bold rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">
-				<a href={% url 'user:edit' user_id=id %} class="text-stone-900 hover:text-pink-600 duration-500">Update</a>
+			<button class="mt-4 py-2 w-1/2 font-bold rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">
+				<a href={% url 'user:edit' user_id=id %} class="block">Edit Profile</a>
 			</button>
 			{% endif %}
 		</div>

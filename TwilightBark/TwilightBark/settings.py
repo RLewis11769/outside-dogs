@@ -127,10 +127,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
+# Tell Django where to find static files
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
 STATIC_URL = '/static/'
 
+# Tell Django temp file location
 TEMP = os.path.join(BASE_DIR, 'static/temp')
+
+# Define max size of file upload
+DATA_UPLOAD_MAX = 10485760  # aka max 10MB

@@ -2,7 +2,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
-from .forms import RegistrationForm, UserAuthenticationForm
+from django.conf import settings
+from .forms import RegistrationForm, UserAuthenticationForm, AccountUpdateForm
 from .models import User
 from .utils import get_redirect_destination
 
@@ -109,3 +110,53 @@ def user_account(request, *args, **kwargs):
         context['is_self'] = is_self
 
         return render(request, 'user/account.html', context)
+
+
+def edit_account(request, *args, **kwargs):
+    """ """
+    # If not logged in, can't edit any account
+    if not request.user.is_authenticated:
+        return redirect('login')
+    # Get id of user whose account is being edited
+    user_id = kwargs.get('user_id')
+    try:
+        # Try to get user based on id
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return HttpResponse(f'Account does not exist for user {user_id}')
+    # Make sure user is trying to edit their own account
+    if user.id != request.user.id:
+        return HttpResponse(f'You cannot edit this user\'s account')
+    context = {}
+    if request.POST:
+        # Passing image file separately from form data
+        # instance is the particular data being posted
+        form = AccountUpdateForm(request.POST, request.FILES,
+                                 instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('user:account', user_id=user.id)
+        else:
+            # If form is not valid, display form with errors and existing data
+            # initial overwrites values from form fields with original data
+            form = AccountUpdateForm(request.POST, instance=request.user,
+                                     initial={
+                                        'id': user.id,
+                                        'email': user.email,
+                                        'username': user.username,
+                                        'profile_pic': user.profile_pic,
+                                        'hide_email': user.hide_email
+                                        })
+            context['form'] = form
+    # If not POST, loading form for first time so load initial values
+    else:
+        form = AccountUpdateForm(initial={
+                                 'id': user.id,
+                                 'email': user.email,
+                                 'username': user.username,
+                                 'profile_pic': user.profile_pic,
+                                 'hide_email': user.hide_email
+                                 })
+        context['form'] = form
+    context['DATA_UPLOAD_MAX_MEMORY_SIZE'] = settings.DATA_UPLOAD_MAX
+    return render(request, 'user/account_edit.html', context)

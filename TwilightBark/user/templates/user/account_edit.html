@@ -2,14 +2,26 @@
 {% load static %}
 
 {% block content %}
-<main class="flex flex-col items-center">
-	<div class="py-20 w-1/2 h-1/2 flex flex-col">
-		<div class="mx-auto mb-4 w-1/3 h-1/3 rounded-full bg-stone-900 border border-4 border-stone-900">
-			<img class="block" alt="user profile pic" id="id_profile_image" src={% static 'profile_images/default_pic.png' %}>
+<main>
+	<div class="py-20">
+		<!-- Confirm/cancel buttons -->
+		<div class="mb-2" id="image_cancel_confirm">
+			<span id="cancel" class="material-icons text-red-700">cancel</span>
+			<span id="confirm" class="material-icons text-emerald-700">check</span>
 		</div>
-		<!-- <button class="middle" id="id_middle_container">
-			<p class="text" id="id_text">Edit</p>
-		</button> -->
+		<!-- Profile image and edit button -->
+		<div>
+			<div class="flex flex-col items-center">
+				<div class="w-60 h-60 flex flex-col" id="image_container">
+					<div class="mx-auto rounded-full bg-stone-900 border border-4 border-stone-900">
+						<img class="block" alt="user profile pic" id="profile_image" src={% static 'profile_images/default_pic.png' %}>
+					</div>
+					<button id="edit_button">
+						<p class="text" id="edit_text">Edit</p>
+					</button>
+				</div>
+			</div>
+		</div>
 
 		<form method="POST">
 			<!-- Token required for posting data -->
@@ -17,9 +29,9 @@
 
 			<div class="pb-3 w-full flex flex-col items-center">
 				<!-- Input fields -->
-				<input type="file" name="profile_image" id="id_profile_image" class="py-2 w-1/3">
-				<input type="email" name="email" id="id_input_email" class="my-1 w-1/2 rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Email address" value={{form.initial.email}} required autofocus>
-				<input type="text" name="username" id="id_input_username" class="my-1 w-1/2 rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Password" value={{form.initial.username}} required>
+				<input type="file" name="profile_image" id="profile_image_display" class="py-2 w-1/3">
+				<input type="email" name="email" id="id_input_email" class="my-1 w-1/3 rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Email address" value={{form.initial.email}} required autofocus>
+				<input type="text" name="username" id="id_input_username" class="my-1 w-1/3 rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Password" value={{form.initial.username}} required>
 				<div class="my-2 checkbox">
 					<label>
 						<input type="checkbox" name="hide_email" id="id_input_hide_email" class="my-1 mr-2" {% if form.initial.hide_email %}checked{%endif%}>
@@ -38,7 +50,7 @@
 					<p class="py-2 text-red-700">{{form.non_field_errors}}</p>
 				{% endif %}
 	
-				<button type="submit" class="my-2 py-2 w-1/2 rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Save</button>
+				<button type="submit" class="my-2 py-2 w-1/3 rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Save</button>
 			</div>
 		</form>
 

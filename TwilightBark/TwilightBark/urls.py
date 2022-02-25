@@ -25,5 +25,6 @@ urlpatterns = [
     path('', index, name='index'),
     # namespace is used to define/indiviudalize urls
     # Referenced in templates as {% url 'namespace:url_name' %}
+    path('chat/', include('chat.urls', namespace='chat')),
     path('user/', include('user.urls', namespace='user')),
 ]

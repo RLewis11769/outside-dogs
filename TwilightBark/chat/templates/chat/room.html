@@ -1,0 +1,55 @@
+{% extends 'TwilightBark/base.html' %}
+
+{% block content %}
+<main>
+    <div class="d-flex flex-row align-items-center">
+        <span class="material-icons m-auto pr-1 connected-users-icon">person_outline</span>
+        <span class="m-auto connected-users" id="id_connected_users"></span>
+    </div>
+    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+    <div class="d-flex chat-log" id="id_chat_log"></div>
+    <input id="chat-message-input" type="text" size="100"><br>
+    <input id="chat-message-submit" type="button" value="Send">
+    {{ room_name|json_script:"room-name" }}
+    <script>
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        const ws = window.location.protocol == "https:" ? "wss://" : "ws://";
+        const endpoint = ws + window.location.host + "/ws/chat/" + roomName + "/";
+        const socket = new WebSocket(endpoint);
+
+        socket.onopen = (e) => {
+            console.log("Connected to " + endpoint);
+            if ("{{request.user.is_authenticated}}") {
+                console.log("{{request.user.username}} joined");
+            }
+        };
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').value += (data.message + '\n');
+        };
+
+        socket.onclose = function(e) {
+            if ("{{request.user.is_authenticated}}") {
+                console.log("{{request.user.username}} left");
+            }
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            socket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
+</main>
+{% endblock %}

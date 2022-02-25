@@ -27,8 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Define User model in global scope
 AUTH_USER_MODEL = 'user.User'
 
+# Backend to allow case-insensitive email addresses
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.AllowAllUsersModelBackend',
     'user.backends.CaseInsensitiveModelBackend'
@@ -44,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
+    'chat',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -74,8 +78,20 @@ TEMPLATES = [
     },
 ]
 
+# Default is web server gateway interface
 WSGI_APPLICATION = 'TwilightBark.wsgi.application'
+# When using channels, neeed asynchronous (diff when runserver)
+ASGI_APPLICATION = 'TwilightBark.routing.application'
+# ASGI_APPLICATION = 'asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

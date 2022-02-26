@@ -6,8 +6,8 @@
         <span class="material-icons m-auto pr-1 connected-users-icon">person_outline</span>
         <span class="m-auto connected-users" id="id_connected_users"></span>
     </div>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-    <div class="d-flex chat-log" id="id_chat_log"></div>
+    <div class="flex chat-log" id="id_chat_log"></div>
+    <!-- <textarea id="chat-log" cols="100" rows="20"></textarea><br> -->
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send">
     {{ room_name|json_script:"room-name" }}
@@ -18,16 +18,37 @@
         const socket = new WebSocket(endpoint);
 
         socket.onopen = (e) => {
+            user = "{{request.user.username}}";
             console.log("Connected to " + endpoint);
-            if ("{{request.user.is_authenticated}}") {
-                console.log("{{request.user.username}} joined");
-            }
+            // if ("{{request.user.is_authenticated}}") {
+            //     addWelcomeMessage("{{user}}");
+            // }
         };
 
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
-        };
+            console.log(data)
+            if (data.msg_type == "join") {
+                addMessage(data.user, "joined");
+                countUsers(data.count)
+            }
+            if (data.msg_type == "leave") {
+                addMessage(data.user, "left");
+                countUsers(data.count)
+            }
+            if (data.msg_type == "message") {
+                addToDOM(data);
+            }
+            // if (data.msg_type == "count") {
+            //     console.log(data.count);
+            //     countUsers(data.count);
+            // }
+            // } else if (data.type == "user_disconnected") {
+            //     removeUser(data.user);
+        }
+            // console.log(data);
+            // addToDOM(data);
+        // };
 
         socket.onclose = function(e) {
             if ("{{request.user.is_authenticated}}") {
@@ -50,6 +71,49 @@
             }));
             messageInputDom.value = '';
         };
+
+        function addMessage(username, status) {
+            const chatLog = document.getElementById("id_chat_log")
+            const newMessageDiv = document.createElement("div")
+            const user_p_tag = document.createElement("p")
+            user_p_tag.innerHTML = username + " " + status + '\n';
+            newMessageDiv.appendChild(user_p_tag)
+            chatLog.appendChild(newMessageDiv)
+        }
+
+        function addToDOM(data) {
+            msg = data['message'] + '\n';
+            username = data['user'] + ": "
+            timestamp = data['timestamp']
+    
+            const chatLog = document.getElementById("id_chat_log")
+            const newMessageDiv = document.createElement("div")
+            // newMessageDiv.classList.add("flex")
+            // newMessageDiv.classList.add("flex-col")
+            const div1 = document.createElement("div")
+            // div1.classList.add("flex")
+            // div1.classList.add("flex-col")
+            const div2 = document.createElement("div")
+            // div2.classList.add("flex")
+            // div2.classList.add("flex-row")
+            const user_p_tag = document.createElement("span")
+            user_p_tag.innerHTML = username
+            div2.appendChild(user_p_tag)
+            const timestampSpan = document.createElement("span")
+            timestampSpan.innerHTML = timestamp
+            div2.appendChild(timestampSpan)
+            div1.appendChild(div2)
+            const msg_tag = document.createElement("p")
+            msg_tag.innerHTML = msg
+            div1.appendChild(msg_tag)
+            newMessageDiv.appendChild(div1)
+            chatLog.appendChild(newMessageDiv)
+        }
+
+        function countUsers(count) {
+            element = document.getElementById("id_connected_users")
+            element.innerHTML = count
+        }
     </script>
 </main>
 {% endblock %}

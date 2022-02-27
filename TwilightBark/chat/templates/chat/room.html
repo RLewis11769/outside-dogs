@@ -1,117 +1,122 @@
 {% extends 'TwilightBark/base.html' %}
 
 {% block content %}
-<main>
-    <div class="d-flex flex-row align-items-center">
-        <span class="material-icons m-auto pr-1 connected-users-icon">person_outline</span>
-        <span class="m-auto connected-users" id="id_connected_users"></span>
+<main class="mt-5 mb-20 flex flex-col">
+    <div class="mx-auto w-1/2">
+        <div class="m-5 flex flex-row-reverse text-teal-500">
+            <span class="text-2xl font-normal" id="user_count"></span>
+            <span class="mx-2 text-3xl material-icons">person_outline</span>
+        </div>
+        <div id="chat_log"></div>
+        <input class="my-3 w-full rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" id="chat-message-input" type="text"><br>
+        <button id="chat-message-submit" type="submit" class="py-2 my-4 w-full rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Submit</button>
+        {{ room_name|json_script:"room-name" }}
     </div>
-    <div class="flex chat-log" id="id_chat_log"></div>
-    <!-- <textarea id="chat-log" cols="100" rows="20"></textarea><br> -->
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
-    {{ room_name|json_script:"room-name" }}
+
     <script>
+        // Get room name based on URL
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        // Websocket URL starts with ws:// if unsecured or wss:// if secured through https
         const ws = window.location.protocol == "https:" ? "wss://" : "ws://";
+        // Websocket endpoint pattern shown in routing.py - ws/chat/<room_name> - not in URL
         const endpoint = ws + window.location.host + "/ws/chat/" + roomName + "/";
         const socket = new WebSocket(endpoint);
 
-        socket.onopen = (e) => {
-            user = "{{request.user.username}}";
-            console.log("Connected to " + endpoint);
+        // socket.onopen = (e) => {
+            // user = "{{request.user.username}}";
+            // console.log("Connected to " + endpoint);
             // if ("{{request.user.is_authenticated}}") {
             //     addWelcomeMessage("{{user}}");
             // }
-        };
+        // };
 
-        socket.onmessage = function(e) {
+        socket.onmessage = (e) => {
+            // Parse data coming back from server and direct to correct function
             const data = JSON.parse(e.data);
             console.log(data)
             if (data.msg_type == "join") {
-                addMessage(data.user, "joined");
+                // If new user joined, add welcome message to notify other users and update user count
+                if (data.user)
+                    addMessage(data.user, "joined");
                 countUsers(data.count)
-            }
-            if (data.msg_type == "leave") {
-                addMessage(data.user, "left");
+            } else if (data.msg_type == "leave") {
+                // If user left, notify other chat members and update user count
+                if (data.user)
+                    addMessage(data.user, "left");
                 countUsers(data.count)
-            }
-            if (data.msg_type == "message") {
+            } else if (data.msg_type == "message") {
+                // If new message, add to chat log DOM
                 addToDOM(data);
+            } else if (data.msg_type == "error") {
+                // If error, log error message but don't add to DOM
+                console.log(data.error);
             }
-            // if (data.msg_type == "count") {
-            //     console.log(data.count);
-            //     countUsers(data.count);
-            // }
-            // } else if (data.type == "user_disconnected") {
-            //     removeUser(data.user);
         }
-            // console.log(data);
-            // addToDOM(data);
-        // };
 
-        socket.onclose = function(e) {
+        socket.onclose = (e) => {
             if ("{{request.user.is_authenticated}}") {
                 console.log("{{request.user.username}} left");
             }
         };
 
+        // Focus on input field when page loads
         document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {
+
+        document.querySelector('#chat-message-input').onkeyup = (e) => {
+            // Allow for "Enter" key to submit message
+            if (e.keyCode === 13)
                 document.querySelector('#chat-message-submit').click();
-            }
         };
 
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
+        document.querySelector('#chat-message-submit').onclick = (e) => {
+            // When user clicks submit button or enter, send message to server
+            const inputField = document.querySelector('#chat-message-input');
+            const message = inputField.value;
             socket.send(JSON.stringify({
                 'message': message
             }));
-            messageInputDom.value = '';
+            // Clear input field
+            inputField.value = '';
         };
 
         function addMessage(username, status) {
-            const chatLog = document.getElementById("id_chat_log")
-            const newMessageDiv = document.createElement("div")
-            const user_p_tag = document.createElement("p")
-            user_p_tag.innerHTML = username + " " + status + '\n';
-            newMessageDiv.appendChild(user_p_tag)
-            chatLog.appendChild(newMessageDiv)
+            // When user status message comes back from server, add to DOM
+            // Create div with joined/left message, and add div to chat log
+            const chatLog = document.getElementById("chat_log")
+            const messageDiv = document.createElement("div")
+            const usernameSpan = document.createElement("p")
+            usernameSpan.innerHTML = username + " " + status;
+            messageDiv.classList.add("m-3")
+            messageDiv.appendChild(usernameSpan)
+            chatLog.appendChild(messageDiv)
         }
 
         function addToDOM(data) {
-            msg = data['message'] + '\n';
-            username = data['user'] + ": "
+            // When message comes back from server, add to DOM
+            msg = data['message']
+            username = data['user'] + " "
             timestamp = data['timestamp']
-    
-            const chatLog = document.getElementById("id_chat_log")
-            const newMessageDiv = document.createElement("div")
-            // newMessageDiv.classList.add("flex")
-            // newMessageDiv.classList.add("flex-col")
-            const div1 = document.createElement("div")
-            // div1.classList.add("flex")
-            // div1.classList.add("flex-col")
-            const div2 = document.createElement("div")
-            // div2.classList.add("flex")
-            // div2.classList.add("flex-row")
-            const user_p_tag = document.createElement("span")
-            user_p_tag.innerHTML = username
-            div2.appendChild(user_p_tag)
-            const timestampSpan = document.createElement("span")
-            timestampSpan.innerHTML = timestamp
-            div2.appendChild(timestampSpan)
-            div1.appendChild(div2)
+
+            // Create div with message and details about message, and add to chat log
+            const chatLog = document.getElementById("chat_log")
+            const messageDiv = document.createElement("div")
+            const usernameSpan = document.createElement("span")
+            usernameSpan.innerHTML = username
+            messageDiv.appendChild(usernameSpan)
+            const timeSpan = document.createElement("span")
+            timeSpan.innerHTML = timestamp
+            messageDiv.appendChild(timeSpan)
             const msg_tag = document.createElement("p")
             msg_tag.innerHTML = msg
-            div1.appendChild(msg_tag)
-            newMessageDiv.appendChild(div1)
-            chatLog.appendChild(newMessageDiv)
+            msg_tag.classList.add("font-normal")
+            messageDiv.appendChild(msg_tag)
+            messageDiv.classList.add("m-3")
+            chatLog.appendChild(messageDiv)
         }
 
         function countUsers(count) {
-            element = document.getElementById("id_connected_users")
+            // When user count comes back from server, update user count
+            element = document.getElementById("user_count")
             element.innerHTML = count
         }
     </script>

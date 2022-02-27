@@ -1,6 +1,7 @@
 """ Helper functions for chat """
 from datetime import datetime
 from django.contrib.humanize.templatetags.humanize import naturalday
+from django.core.serializers.python import Serializer
 
 
 def calculate_time(timestamp):
@@ -26,3 +27,17 @@ def calculate_time(timestamp):
         str_date = datetime.strftime(timestamp, "%m/%d/%Y")
         ts = f"{str_date} at {str_time}"
     return str(ts)
+
+
+class PayloadSerializer(Serializer):
+    """ Very literal serializing of queryset obj to correct format """
+
+    def get_dump_object(self, qs=None):
+        """ Modification of default method to create serialized queryset object """
+        obj = {}
+        obj.update({'message': str(qs.message)})
+        obj.update({'user': str(qs.user.username)})
+        obj.update({'timestamp': calculate_time(qs.timestamp)})
+        obj.update({'pic': str(qs.user.profile_pic.url)})
+        obj.update({'id': str(qs.id)})
+        return obj

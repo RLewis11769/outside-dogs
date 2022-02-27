@@ -1,5 +1,4 @@
 {% extends 'TwilightBark/base.html' %}
-{% load static %}
 
 {% block content %}
 
@@ -14,124 +13,11 @@
     <div id="chat_log"></div>
 
     <p id="page_number" class="text-center mb-3">Page 1</p>
-    <input class="my-3 w-full rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" id="chat-message-input" type="text"><br>
+    <input class="my-3 w-full rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" id="chat-message-input" type="text" aria-label="Enter your chat messages here"><br>
     <button id="chat-message-submit" type="submit" class="py-2 my-4 w-full rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Submit</button>
     {{ room_name|json_script:"room-name" }}
 </div>
 
-    <script>
-        // Get room name based on URL
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
-        // Websocket URL starts with ws:// if unsecured or wss:// if secured through https
-        const ws = window.location.protocol == "https:" ? "wss://" : "ws://";
-        // Websocket endpoint pattern shown in routing.py - ws/chat/<room_name> - not in URL
-        const endpoint = `${ws}${window.location.host}/ws/chat/${roomName}/`;
-        const socket = new WebSocket(endpoint);
-
-        socket.onmessage = (e) => {
-            // Parse data coming back from server and direct to correct function
-            const data = JSON.parse(e.data);
-            console.log(data)
-            if (data.msg_type == "join") {
-                // If new user joined, add welcome message to notify other users and update user count
-                if (data.user)
-                    addMessage(data.user, "joined");
-                countUsers(data.count)
-            } else if (data.msg_type == "leave") {
-                // If user left, notify other chat members and update user count
-                if (data.user)
-                    addMessage(data.user, "left");
-                countUsers(data.count)
-            } else if (data.msg_type == "message") {
-                // If new message, add to chat log DOM
-                addToDOM(data);
-            } else if (data.msg_type == "error") {
-                // If error, log error message but don't add to DOM
-                console.log(data.error);
-            } else if (data.type == "load_messages") {
-                // Note! This only happens to one user at a time
-                // When first load page, add message backload from db to DOM
-                handleMessagesBacklog(data.messages);
-                // Page number will never update automatically but will on first load
-                setPageNumber(data.pageNum);
-            }
-        }
-
-        // Focus on input field when page loads
-        document.querySelector('#chat-message-input').focus();
-
-        document.querySelector('#chat-message-input').onkeyup = (e) => {
-            // Allow for "Enter" key to submit message
-            if (e.keyCode === 13)
-                document.querySelector('#chat-message-submit').click();
-        };
-
-        document.querySelector('#chat-message-submit').onclick = (e) => {
-            // When user clicks submit button or enter, send message to server
-            const inputField = document.querySelector('#chat-message-input');
-            const message = inputField.value;
-            socket.send(JSON.stringify({
-                'message': message
-            }));
-            // Clear input field
-            inputField.value = '';
-        };
-
-        function addMessage(username, status) {
-            // When user status message comes back from server, add to DOM
-            // Create div with joined/left message, and add div to chat log
-            const chatLog = document.getElementById("chat_log")
-            const messageDiv = document.createElement("div")
-            const usernameSpan = document.createElement("p")
-            usernameSpan.innerHTML = `${username} ${status}`
-            messageDiv.classList.add("m-3")
-            messageDiv.appendChild(usernameSpan)
-            chatLog.appendChild(messageDiv)
-        }
-
-        function addToDOM(data) {
-            // When message comes back from server, add to DOM
-            msg = data['message']
-            username = `${data.user} `
-            timestamp = data['timestamp']
-
-            // Create div with message and details about message, and add to chat log
-            const chatLog = document.getElementById("chat_log")
-            const messageDiv = document.createElement("div")
-            const usernameSpan = document.createElement("span")
-            usernameSpan.innerHTML = username
-            messageDiv.appendChild(usernameSpan)
-            const timeSpan = document.createElement("span")
-            timeSpan.innerHTML = timestamp
-            messageDiv.appendChild(timeSpan)
-            const msg_tag = document.createElement("p")
-            msg_tag.innerHTML = msg
-            msg_tag.classList.add("font-normal")
-            messageDiv.appendChild(msg_tag)
-            messageDiv.classList.add("m-3")
-            chatLog.appendChild(messageDiv)
-        }
-
-        function countUsers(count) {
-            // When user count comes back from server, update user count
-            element = document.getElementById("user_count")
-            element.innerHTML = count
-        }
-
-        function handleMessagesBacklog(messages) {
-            // Load backlog/payload of messages from server to DOM
-            if (messages) {
-                messages.forEach((message) => {
-                    addToDOM(message)
-                });
-            }
-        }
-
-        function setPageNumber(pageNumber) {
-            // Add page number to DOM on first load
-            document.getElementById("page_number").innerHTML = `Page ${pageNumber}`
-        }
-
-    </script>
+<script src={% static 'js/room.js' %}></script>
 
 {% endblock content %}

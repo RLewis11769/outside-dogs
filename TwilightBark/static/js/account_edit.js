@@ -1,10 +1,10 @@
+// On window load/document ready, enable image overlay
 window.addEventListener("load", () => {
-  console.log("Scripts loaded");
   enableImageOverlay();
 });
 
 function enableImageOverlay() {
-  // Set up image overlay when hovering over image
+// Set up image overlay when hovering over image
 
   // Style "edit" button
   const editText = document.getElementById("edit_text")
@@ -21,7 +21,7 @@ function enableImageOverlay() {
   editButton.style.position = "absolute"
   editButton.style.top = "50%"
   editButton.style.left = "50%"
-  editButton.style.transform = "translate(-50%, -300%)"
+  editButton.style.transform = "translate(-50%, -350%)"
 
   const imageContainer = document.getElementById("image_container")
   const profileImage = document.getElementById("profile_image")
@@ -59,12 +59,12 @@ function enableImageOverlay() {
     console.log("Edit...")
     document.getElementById('profile_image').click();
   });
-
-  // disableImageOverlay()
-}
+  
+//   disableImageOverlay()
+  }
 
 function disableImageOverlay() {
-  // Remove image overlay and add event listener to choose image
+// Remove image overlay and add event listener to choose image
 
   // Remove all event listeners when hovering over image
   const imageContainer = document.getElementById("image_container")

@@ -1,18 +1,23 @@
 {% extends 'TwilightBark/base.html' %}
+{% load static %}
 
 {% block content %}
-<main class="mt-5 mb-20 flex flex-col">
-    <div class="mx-auto w-1/2">
-        <div class="m-5 flex flex-row-reverse text-teal-500">
-            <span class="text-2xl font-normal" id="user_count"></span>
-            <span class="mx-2 text-3xl material-icons">person_outline</span>
-        </div>
-        <div id="chat_log"></div>
-        <input class="my-3 w-full rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" id="chat-message-input" type="text"><br>
-        <button id="chat-message-submit" type="submit" class="py-2 my-4 w-full rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Submit</button>
-        {{ room_name|json_script:"room-name" }}
-        <p id="page_number" class="text-center">1</p>
+
+<div class="mx-auto mt-5 mb-20 w-1/2 flex flex-col">
+    <h1 class="mt-10 mx-auto text-2xl ">{{ room_name}}</h1>
+    <div class="m-5 flex flex-row-reverse text-teal-500">
+        <span class="text-2xl font-normal" id="user_count"></span>
+        <span class="mx-2 text-3xl material-icons">person_outline</span>
     </div>
+
+    <!-- Actual location of chat messages -->
+    <div id="chat_log"></div>
+
+    <p id="page_number" class="text-center mb-3">Page 1</p>
+    <input class="my-3 w-full rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" id="chat-message-input" type="text"><br>
+    <button id="chat-message-submit" type="submit" class="py-2 my-4 w-full rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Submit</button>
+    {{ room_name|json_script:"room-name" }}
+</div>
 
     <script>
         // Get room name based on URL
@@ -43,7 +48,8 @@
             } else if (data.msg_type == "error") {
                 // If error, log error message but don't add to DOM
                 console.log(data.error);
-            } else if (data.msg_type == "load") {
+            } else if (data.type == "load_messages") {
+                // Note! This only happens to one user at a time
                 // When first load page, add message backload from db to DOM
                 handleMessagesBacklog(data.messages);
                 // Page number will never update automatically but will on first load
@@ -70,15 +76,6 @@
             // Clear input field
             inputField.value = '';
         };
-
-        // const chatLog = document.querySelector('#chat_log');
-        // document.addEventListener('scroll', () => {
-        //     // When user scrolls down, load more messages from db
-        //     socket.send(JSON.stringify({
-        //         'load': true,
-        //         'message': ""
-        //     }));
-        // });
 
         function addMessage(username, status) {
             // When user status message comes back from server, add to DOM
@@ -124,16 +121,17 @@
         function handleMessagesBacklog(messages) {
             // Load backlog/payload of messages from server to DOM
             if (messages) {
-                messages.forEach(message => {
+                messages.forEach((message) => {
                     addToDOM(message)
                 });
             }
         }
 
         function setPageNumber(pageNumber) {
+            // Add page number to DOM on first load
             document.getElementById("page_number").innerHTML = `Page ${pageNumber}`
         }
 
     </script>
-</main>
-{% endblock %}
+
+{% endblock content %}

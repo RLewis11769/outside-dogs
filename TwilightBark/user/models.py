@@ -1,7 +1,6 @@
 """ Define User models for basic user and admin user """
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from .utils import get_default_profile_pic, get_profile_pic
 
 
 class AccountManager(BaseUserManager):
@@ -57,8 +56,8 @@ class User(AbstractBaseUser):
     date_joined = models.DateTimeField(verbose_name='date joined',
                                        auto_now_add=True)
     profile_pic = models.ImageField(max_length=200,
-                                    upload_to=get_profile_pic, blank=True,
-                                    default=get_default_profile_pic)
+                                    upload_to='profile_images', blank=True,
+                                    default='default_pic.png')
     hide_email = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

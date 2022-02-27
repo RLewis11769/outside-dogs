@@ -14,7 +14,7 @@
 				<!-- Account settings -->
 				<div class="flex flex-col md:flex-row">
 					<div class="h-10 w-10 mx-auto bg-stone-800 rounded-full">
-						<img id="id_profile" src={% static 'profile_images/default_pic.png' %} alt="User profile pic" >
+						<img id="id_profile" class="rounded-full" src={{ user.profile_pic.url }} alt="User profile pic" >
 					</div>
 					<a href={% url 'user:account' user_id=request.user.id %} class="md:px-5 py-2 hover:text-pink-600 transition duration-500">Account</a>
 					<a href={% url 'user:logout' %} class="py-2 hover:text-pink-600 transition duration-500">Logout</a>

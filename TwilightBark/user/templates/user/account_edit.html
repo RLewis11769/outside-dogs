@@ -14,7 +14,7 @@
 		<div class="flex flex-col items-center">
 			<div class="w-60 h-60 mb-10 flex flex-col" id="image_container">
 				<div class="mx-auto rounded-full bg-stone-900 border border-4 border-stone-900">
-					<img class="block" alt="user profile pic" id="profile_image" src={% static 'profile_images/default_pic.png' %}>
+					<img class="block rounded-full" alt="user profile pic" id="profile_image" src={{ user.profile_pic.url }}>
 				</div>
 				<button id="edit_button">
 					<p class="text" id="edit_text">Edit</p>

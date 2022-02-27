@@ -11,6 +11,7 @@
         <input class="my-3 w-full rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" id="chat-message-input" type="text"><br>
         <button id="chat-message-submit" type="submit" class="py-2 my-4 w-full rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Submit</button>
         {{ room_name|json_script:"room-name" }}
+        <p id="page_number" class="text-center">1</p>
     </div>
 
     <script>
@@ -19,16 +20,8 @@
         // Websocket URL starts with ws:// if unsecured or wss:// if secured through https
         const ws = window.location.protocol == "https:" ? "wss://" : "ws://";
         // Websocket endpoint pattern shown in routing.py - ws/chat/<room_name> - not in URL
-        const endpoint = ws + window.location.host + "/ws/chat/" + roomName + "/";
+        const endpoint = `${ws}${window.location.host}/ws/chat/${roomName}/`;
         const socket = new WebSocket(endpoint);
-
-        // socket.onopen = (e) => {
-            // user = "{{request.user.username}}";
-            // console.log("Connected to " + endpoint);
-            // if ("{{request.user.is_authenticated}}") {
-            //     addWelcomeMessage("{{user}}");
-            // }
-        // };
 
         socket.onmessage = (e) => {
             // Parse data coming back from server and direct to correct function
@@ -50,14 +43,13 @@
             } else if (data.msg_type == "error") {
                 // If error, log error message but don't add to DOM
                 console.log(data.error);
+            } else if (data.msg_type == "load") {
+                // When first load page, add message backload from db to DOM
+                handleMessagesBacklog(data.messages);
+                // Page number will never update automatically but will on first load
+                setPageNumber(data.pageNum);
             }
         }
-
-        socket.onclose = (e) => {
-            if ("{{request.user.is_authenticated}}") {
-                console.log("{{request.user.username}} left");
-            }
-        };
 
         // Focus on input field when page loads
         document.querySelector('#chat-message-input').focus();
@@ -79,13 +71,22 @@
             inputField.value = '';
         };
 
+        // const chatLog = document.querySelector('#chat_log');
+        // document.addEventListener('scroll', () => {
+        //     // When user scrolls down, load more messages from db
+        //     socket.send(JSON.stringify({
+        //         'load': true,
+        //         'message': ""
+        //     }));
+        // });
+
         function addMessage(username, status) {
             // When user status message comes back from server, add to DOM
             // Create div with joined/left message, and add div to chat log
             const chatLog = document.getElementById("chat_log")
             const messageDiv = document.createElement("div")
             const usernameSpan = document.createElement("p")
-            usernameSpan.innerHTML = username + " " + status;
+            usernameSpan.innerHTML = `${username} ${status}`
             messageDiv.classList.add("m-3")
             messageDiv.appendChild(usernameSpan)
             chatLog.appendChild(messageDiv)
@@ -94,7 +95,7 @@
         function addToDOM(data) {
             // When message comes back from server, add to DOM
             msg = data['message']
-            username = data['user'] + " "
+            username = `${data.user} `
             timestamp = data['timestamp']
 
             // Create div with message and details about message, and add to chat log
@@ -119,6 +120,20 @@
             element = document.getElementById("user_count")
             element.innerHTML = count
         }
+
+        function handleMessagesBacklog(messages) {
+            // Load backlog/payload of messages from server to DOM
+            if (messages) {
+                messages.forEach(message => {
+                    addToDOM(message)
+                });
+            }
+        }
+
+        function setPageNumber(pageNumber) {
+            document.getElementById("page_number").innerHTML = `Page ${pageNumber}`
+        }
+
     </script>
 </main>
 {% endblock %}

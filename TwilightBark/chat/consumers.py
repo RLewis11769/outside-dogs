@@ -1,10 +1,12 @@
-""" Set up server-side consumer (consumers have similar purpose to views) """
+""" Set up server-side consumer to handle backend websocket connections """
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .utils import calculate_time
+from .utils import calculate_time, PayloadSerializer
 from datetime import datetime
 from channels.db import database_sync_to_async
 from .models import ChatRoom, ChatMessage
+from django.core.paginator import Paginator
+from math import ceil
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -42,6 +44,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Accept all connections (even if not authenticated)
         await self.accept()
 
+        # Get backlog of existing messages from db
+        payload = await get_room_chat_messages(room, 1)
+        if payload:
+            # Convert to json
+            payload = json.loads(payload)
+            await self.channel_layer.group_send(
+                # Send message to everyone in room group
+                self.room_group_name,
+                {
+                    # Send payload to load_messages function
+                    'type': 'load_messages',
+                    'data': payload['messages'],
+                    'pageNum': payload['pageNum'],
+                }
+        )
         # Send message to room group - new user's name and new total user count
         total_users = get_num_connected_users(room)
         await self.channel_layer.group_send(
@@ -63,6 +80,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "count": event["count"]
         }))
 
+    async def load_messages(self, event):
+        """ Send backlog of room's message to room group based on event passed in connect() """
+        await self.send(text_data=json.dumps({
+            "msg_type": "load",
+            "messages": event["data"],
+            "pageNum": event["pageNum"]
+        }))
+
     async def disconnect(self, close_code):
         """ Remove user from room group and send message to room group """
 
@@ -70,11 +95,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
 
-        try:
-            room = await get_room(self.room_name)
-        except Exception as e:
-            pass
         # Find user making disconnect request - remove from db if authenticated
+        room = await get_room(self.room_name)
         user = self.scope['user']
         is_auth = user.is_authenticated
         if is_auth:
@@ -106,21 +128,33 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "count": event["count"]
         }))
 
+
     # Receive message from WebSocket
     async def receive(self, text_data):
+        """ Receive message from websocket frontend """
         text_data_json = json.loads(text_data)
-        user = self.scope['user']
         message = text_data_json['message']
+        # if text_data_json['message'] == "":
+        #     await self.send(text_data=json.dumps({
+        #         "msg_type": "test",
+        #     }))
+        user = self.scope['user']
+
         if user.is_authenticated:
-            # Send message to room group
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'chat_message',
-                    'message': message,
-                    'user': user.username
-                }
-            )
+            # Only users can send messages - save to db and send to room group
+            room = await get_room(self.room_name)
+            # Save message to db
+            if message:
+                await create_message(room, user, message)
+                # Send message to room group
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'chat_message',
+                        'message': message,
+                        'user': user.username
+                    }
+                )
         else:
             await self.send(text_data=json.dumps({
                 "msg_type": "error",
@@ -130,7 +164,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
-        # user = self.scope['user']
         timestamp = calculate_time(datetime.now())
 
         # Send message to WebSocket
@@ -177,3 +210,28 @@ def get_room(room_name):
     except ChatRoom.DoesNotExist:
         raise Exception("Room does not exist")
     return room
+
+@database_sync_to_async
+def create_message(room, user, message):
+    return ChatMessage.objects.create(user=user, room=room, message=message)
+
+
+@database_sync_to_async
+def get_room_chat_messages(room, pageNum):
+    try:
+        qs = ChatMessage.objects.by_room(room)
+        p = Paginator(qs, 5)
+
+        payload = {}
+        new_page = ceil(len(qs) / 5) - 1 if pageNum != 1 else pageNum
+        if new_page <= p.num_pages:
+            new_page = new_page + 1
+            payload['messages'] = PayloadSerializer().serialize(p.page(new_page).object_list)
+        else:
+            payload['messages'] = "None"
+        payload['pageNum'] = new_page
+        return json.dumps(payload)
+    except Exception as e:
+        print("EXCEPTION: " + str(e))
+        return None
+

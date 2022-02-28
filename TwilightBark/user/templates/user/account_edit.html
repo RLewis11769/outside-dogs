@@ -5,23 +5,23 @@
 
 	<script defer src={% static 'js/account_edit.js' %}></script>
 
-	<div class="py-20">
+	<div class="py-20 text-green-600">
 		<!-- Confirm/cancel buttons -->
 		<div class="mb-2" id="image_cancel_confirm">
 			<span id="cancel" class="material-icons text-red-700">cancel</span>
 			<span id="confirm" class="material-icons text-emerald-700">check</span>
 		</div>
+
+		<h1 class="py-2 text-xl text-center">Edit Account Settings</h1>
 		<!-- Profile image and edit button -->
-		<div>
-			<div class="flex flex-col items-center">
-				<div class="w-60 h-60 mb-10 flex flex-col" id="image_container">
-					<div class="mx-auto rounded-full bg-stone-900 border border-4 border-stone-900">
-						<img class="block rounded-full" alt="user profile pic" id="id_profile_image_display" src={{ form.initial.profile_pic.url }}>
-					</div>
-					<button id="edit_button">
-						<p class="text" id="edit_text">Edit</p>
-					</button>
+		<div class="flex flex-col items-center">
+			<div class="w-60 h-60 mb-10 flex flex-col" id="image_container">
+				<div class="mx-auto rounded-full bg-stone-900 border border-4 border-amber-500">
+					<img class="block rounded-full" alt="user profile pic" id="id_profile_image_display" src={{ form.initial.profile_pic.url }}>
 				</div>
+				<button id="edit_button">
+					<p class="text" id="edit_text">Edit</p>
+				</button>
 			</div>
 		</div>
 
@@ -33,8 +33,8 @@
 			<div class="pb-3 w-1/2 mx-auto flex flex-col items-center">
 				<!-- Input fields -->
 				<input type="file" name="profile_image" id="id_profile_image" class="hidden" onchange="readURL(this)">
-				<input type="email" name="email" id="id_input_email" class="my-1 w-full rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Email address" value={{form.initial.email}} required autofocus>
-				<input type="text" name="username" id="id_input_username" class="my-1 w-full rounded-lg border-none focus:ring-2 focus:ring-teal-500 text-teal-500 bg-stone-900" placeholder="Password" value={{form.initial.username}} required>
+				<input type="email" name="email" id="id_input_email" class="my-1 w-full rounded-lg border-none focus:ring-2 focus:ring-green-600 text-green-600 bg-stone-900" placeholder="Email address" value={{form.initial.email}} required autofocus>
+				<input type="text" name="username" id="id_input_username" class="my-1 w-full rounded-lg border-none focus:ring-2 focus:ring-green-600 text-green-600 bg-stone-900" placeholder="Password" value={{form.initial.username}} required>
 				<div class="my-2 checkbox">
 					<label>
 						<input type="checkbox" name="hide_email" id="id_input_hide_email" class="my-1 mr-2" {% if form.initial.hide_email %}checked{%endif%}>
@@ -53,8 +53,8 @@
 					<p class="py-2 text-red-700">{{form.non_field_errors}}</p>
 				{% endif %}
 
-				<button type="submit" id="submit_button" class="my-2 py-2 w-full rounded-lg bg-gradient-to-r from-cyan-600 to-teal-500 shadow font-bold text-stone-800 focus:outline-none hover:from-pink-600 hover:to-pink-600 focus:from-pink-600 focus:to-pink-600 duration-500">Save</button>
-				<a class="p-2 text-teal-500 focus:outline-offset-0 focus:outline-amber-500 hover:text-stone-900" href={% url 'password_reset' %}>Change password</a>
+				<button type="submit" id="submit_button" class="my-2 py-2 w-full rounded-lg text-stone-800 bg-gradient-to-r from-blue-700 to-green-600 shadow font-bold focus:outline-none hover:from-amber-500 hover:to-amber-500 focus:from-amber-500 focus:to-amber-500 duration-500">Save</button>
+				<a class="p-2 text-green-600 focus:outline-offset-0 focus:outline-amber-500 hover:text-amber-500" href={% url 'password_reset' %}>Change password</a>
 
 			</div>
 		</form>

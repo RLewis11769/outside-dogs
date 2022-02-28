@@ -1,9 +1,9 @@
 {% load static %}
 
-<header class="bg-gradient-to-r from-cyan-600 to-teal-500 shadow text-center">
+<header class="bg-gradient-to-r from-blue-700 to-green-600 shadow text-center">
 	<nav class="mx-auto px-3 py-4 max-w-8xl md:flex md:justify-around">
 		<div class="py-4 flex justify-center">
-			<a href={% url 'index' %} class="text-stone-800 focus:outline-none focus:text-pink-600 hover:text-pink-600 transition duration-500">
+			<a href={% url 'index' %} class="text-stone-800 focus:outline-none focus:text-amber-500 hover:text-amber-500 transition duration-500">
 				<span class="material-icons">pets</span>
 				<span class="my-2 p-2 text-3xl">Angel's Twilight Bark</span>
 			</a>
@@ -13,19 +13,19 @@
 			{% if request.user.is_authenticated %}
 				<!-- Account settings -->
 				<div class="flex flex-col md:flex-row">
-					<div class="h-10 w-10 mx-auto bg-stone-800 rounded-full">
+					<div class="h-10 w-10 mx-auto bg-stone-800 border border-amber-500 rounded-full">
 						<img id="id_profile" class="rounded-full" src={{ user.profile_pic.url }} alt="User profile pic" >
 					</div>
-					<a href={% url 'user:account' user_id=request.user.id %} class="md:mx-5 p-2 text-xl hover:text-pink-600 focus:outline-offset-0 focus:outline-pink-600 transition duration-500">Account</a>
-					<a href={% url 'user:logout' %} class="p-2 text-xl hover:text-pink-600 focus:bg-pink-600 transition duration-500">Logout</a>
+					<a href={% url 'user:account' user_id=request.user.id %} class="md:mx-5 p-2 text-xl hover:text-amber-500 focus:outline-offset-0 focus:outline-amber-500 transition duration-500">Account</a>
+					<a href={% url 'user:logout' %} class="p-2 text-xl hover:text-amber-500 focus:outline-offset-0 focus:outline-amber-500 transition duration-500">Logout</a>
 				</div>
 
 			{% else %}
 				<div class="flex flex-col md:flex-row justify-center md:space-x-6 flex-row">
-					<a href={% url 'user:login' %} class="md:mx-5 p-2 text-xl hover:text-pink-600 focus:outline-offset-0 focus:outline-pink-600 transition duration-500">Login</a>
-					<a href={% url 'user:register' %} class="p-2 text-xl hover:text-pink-600 focus:bg-pink-600 transition duration-500">Register</a>
+					<a href={% url 'user:login' %} class="md:mx-5 p-2 text-xl hover:text-amber-500 focus:outline-offset-0 focus:outline-amber-500 transition duration-500">Login</a>
+					<a href={% url 'user:register' %} class="p-2 text-xl rounded-lg bg-amber-500 border-none hover:bg-transparent hover:text-amber-500 hover:ring-4 hover:ring-amber-500 hover:bg-transparent focus:text-amber-500 focus:ring-4 focus:ring-amber-500 focus:bg-transparent  transition duration-500">Register</a>
 				</div>
 			{% endif %}
 		</div>
-	</nav>
+	</nav>			
 </header>

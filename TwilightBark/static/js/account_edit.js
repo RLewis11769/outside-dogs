@@ -29,7 +29,8 @@ function enableImageOverlay() {
 
   // Style "edit" button
   const editText = document.getElementById("edit_text")
-  editText.style.backgroundColor = "#14b8a6"
+  // backgroundColor is tailwind green-600 and font is stone-800
+  editText.style.backgroundColor = "#16A34A"
   editText.style.color = "#292524"
   editText.style.fontWeight = "bold"
   editText.style.fontSize = "1rem"
@@ -63,15 +64,15 @@ function enableImageOverlay() {
     editButton.style.opacity = "0"
   })
 
-  // Add event listener when hovering over edit button - change color
+  // Add event listener when hovering over edit button - change to amber-500
   editText.addEventListener("mouseover", () => {
-    editText.style.backgroundColor = "#db2778"
+    editText.style.backgroundColor = "#F59E0B"
     editText.style.transition = ".5 ease"
   });
 
-  // Add event listener when stop hovering over edit button - change color
+  // Add event listener when stop hovering over edit button - change back to green-600
   editText.addEventListener("mouseout", () => {
-    editText.style.backgroundColor = "#14b8a6"
+    editText.style.backgroundColor = "#16A34A"
     editText.style.transition = ".5 ease"
   });
 

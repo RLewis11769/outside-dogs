@@ -3,6 +3,27 @@ window.addEventListener("load", () => {
   enableImageOverlay();
 });
 
+function readURL(input) {
+  // Read image from file input and display it
+
+  // If file is selected, read it
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+
+    // Asynchronously read image
+    reader.onload = (e) => {
+      disableImageOverlay()
+      // Get image url from input's value
+      const image = e.target.result
+      const displayImage = document.getElementById("id_profile_image_display")
+      // Setting selected image as image in display
+      displayImage.src = image
+    };
+    // Call reader.onload with image url
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
 function enableImageOverlay() {
 // Set up image overlay when hovering over image
 
@@ -23,12 +44,12 @@ function enableImageOverlay() {
   editButton.style.left = "50%"
   editButton.style.transform = "translate(-50%, -350%)"
 
-  const imageContainer = document.getElementById("image_container")
-  const profileImage = document.getElementById("profile_image")
-
   // Make sure cancel and confirm buttons are hidden
   const cancelConfirm = document.getElementById("image_cancel_confirm")
   cancelConfirm.classList.add("hidden")
+
+  const profileImage = document.getElementById("id_profile_image_display")
+  const imageContainer = document.getElementById("image_container")
 
   // Add event listener when hovering over image - add opacity to image
   imageContainer.addEventListener("mouseover", () => {
@@ -55,13 +76,11 @@ function enableImageOverlay() {
   });
 
   // Add event listener when clicking edit button
+  // Simulate clicking on file input button (hidden)
   editButton.addEventListener("click", () => {
-    console.log("Edit...")
-    document.getElementById('profile_image').click();
+    document.getElementById('id_profile_image').click();
   });
-  
-//   disableImageOverlay()
-  }
+}
 
 function disableImageOverlay() {
 // Remove image overlay and add event listener to choose image
@@ -73,7 +92,7 @@ function disableImageOverlay() {
   imageContainer.removeEventListener("click", () => {})
 
   // Revert to basic styling
-  const profileImage = document.getElementById("profile_image")
+  const profileImage = document.getElementById("id_profile_image_display")
   const editButton = document.getElementById("edit_button")
   const editText = document.getElementById("edit_text")
   profileImage.style.opacity = "1"
@@ -81,7 +100,7 @@ function disableImageOverlay() {
   editText.style.cursor = "default"
   editText.style.opacity = "0"
 
-  // Prevent image from doing anything when clicked
+  // Prevent input file from doing anything when clicked
   profileImage.addEventListener("click", (e) => {
     e.preventDefault();
   });
@@ -89,14 +108,13 @@ function disableImageOverlay() {
   // Display cancel and confirm buttons
   const cancelConfirm = document.getElementById("image_cancel_confirm")
   cancelConfirm.classList.remove("hidden")
-  cancelConfirm.classList.add("flex")
-  cancelConfirm.classList.add("flex-row")
-  cancelConfirm.classList.add("justify-evenly")
+  cancelConfirm.classList.add("flex", "flex-row", "justify-evenly")
 
   // Add event listener to checkmark/confirm button
   const checkmark = document.getElementById("confirm")
   checkmark.addEventListener("click", () => {
-    console.log("Confirm...")
+    const button = document.getElementById("submit_button")
+    button.click();
   })
 
   // Add event listener to cancel button - just reload page

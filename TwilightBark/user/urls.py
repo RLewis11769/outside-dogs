@@ -1,4 +1,5 @@
 """ Match URLs to views for user app """
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from .views import (register_user, login_user, logout_user,
                     user_account, edit_account)

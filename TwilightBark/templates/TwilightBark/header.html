@@ -5,7 +5,7 @@
 		<div class="py-4 flex justify-center">
 			<a href={% url 'index' %} class="text-stone-800 focus:outline-none focus:text-pink-600 hover:text-pink-600 transition duration-500">
 				<span class="material-icons">pets</span>
-				<span class="text-3xl">Angel's Twilight Bark</span>
+				<span class="my-2 p-2 text-3xl">Angel's Twilight Bark</span>
 			</a>
 		</div>
 
@@ -16,14 +16,14 @@
 					<div class="h-10 w-10 mx-auto bg-stone-800 rounded-full">
 						<img id="id_profile" class="rounded-full" src={{ user.profile_pic.url }} alt="User profile pic" >
 					</div>
-					<a href={% url 'user:account' user_id=request.user.id %} class="md:px-5 py-2 hover:text-pink-600 transition duration-500">Account</a>
-					<a href={% url 'user:logout' %} class="py-2 hover:text-pink-600 transition duration-500">Logout</a>
+					<a href={% url 'user:account' user_id=request.user.id %} class="md:mx-5 p-2 text-xl hover:text-pink-600 focus:outline-offset-0 focus:outline-pink-600 transition duration-500">Account</a>
+					<a href={% url 'user:logout' %} class="p-2 text-xl hover:text-pink-600 focus:bg-pink-600 transition duration-500">Logout</a>
 				</div>
 
 			{% else %}
 				<div class="flex flex-col md:flex-row justify-center md:space-x-6 flex-row">
-					<a href={% url 'user:login' %} class="my-2 p-2 block text-xl text-stone-800 hover:text-pink-600 duration-500">Login</a>
-					<a href={% url 'user:register' %} class="my-2 p-2 md:px-4 block text-xl bg-transparent border border-2 border-stone-800 rounded-lg text-stone-800 font-bold hover:bg-pink-600 hover:border-pink-600 hover:text-teal-500 duration-500">Register</a>
+					<a href={% url 'user:login' %} class="md:mx-5 p-2 text-xl hover:text-pink-600 focus:outline-offset-0 focus:outline-pink-600 transition duration-500">Login</a>
+					<a href={% url 'user:register' %} class="p-2 text-xl hover:text-pink-600 focus:bg-pink-600 transition duration-500">Register</a>
 				</div>
 			{% endif %}
 		</div>

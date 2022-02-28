@@ -2,6 +2,8 @@
 {% load static %}
 
 {% block content %}
+	<!-- Add JS specific to index page -->
+	<script defer src={% static 'js/index.js' %}></script>
 	<div class="w-full flex flex-col items-center text-center text-teal-500">
 		<span class="material-icons pt-20 pb-10 mx-auto text-transparent bg-gradient-to-r from-cyan-600 to-teal-500 bg-clip-text text-9xl">pets</span>
 		<h1 class="text-4xl mb-4">Welcome to Angel's Twilight Bark!</h1>
@@ -15,7 +17,4 @@
 				</span> today!</p>
 		{% endif %}
 		</div>
-
-		<!-- Add JS specific to index page -->
-		<script src={% static 'js/index.js' %}></script>
 {% endblock %}

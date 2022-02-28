@@ -86,7 +86,7 @@ window.addEventListener("load", () => {
     // If loading multiple images at once, set default pic, then replace later
     const defaultPic = "../../profile_images/default_pic.png"
     pic.src = backlog ? defaultPic : pic_url
-    pic.classList.add("rounded-full", "border", "border-pink-500", "bg-stone-900", "h-12", "w-12", "object-cover", "object-center")
+    pic.classList.add("rounded-full", "border", "border-amber-500", "bg-stone-900", "h-12", "w-12")
     const pic_id = `${data.id}`
     pic.setAttribute("id", pic_id)
     pic.setAttribute("alt", "User profile picture")

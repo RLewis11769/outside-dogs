@@ -1,7 +1,7 @@
-""" Define admin interface for user app """
+""" Define custom admin interface for user app """
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from user.models import User
+from .models import User
 
 
 class AccountAdmin(UserAdmin):

@@ -1,17 +1,18 @@
 """ Set up server-side consumer to handle backend websocket connections """
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
-from .utils import calculate_time, PayloadSerializer
-from datetime import datetime
 from channels.db import database_sync_to_async
-from .models import ChatRoom, ChatMessage
+from channels.generic.websocket import AsyncWebsocketConsumer
+from datetime import datetime
 from django.core.paginator import Paginator
 from math import ceil
+from .models import ChatRoom, ChatMessage
+from .utils import calculate_time, PayloadSerializer
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     """ Consumer to asynchronously handle server websocket events """
 
+    # connect, disconnect, and receive are built-in functions
     async def connect(self):
         """ Add user to room group and send message to group """
 
@@ -50,7 +51,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # Only send message to self, not group
                 "type": "load_messages",
                 # Reverse dict to get messages in correct order oops
-                # Note that messages contains data about each message, not just message text
+                # Messages contains data about messages, not just message text
                 "messages": payload["messages"][::-1],
                 "pageNum": payload["pageNum"]
             }))
@@ -60,7 +61,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # Send message to everyone in room group
             self.room_group_name,
             {
-                # Type connect_disconnect means pass params to connect_disconnect() function
+                # Type means pass params to connect_disconnect() function
                 "type": "connect_disconnect",
                 "user": user.username,
                 "count": total_users,
@@ -100,7 +101,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
-
     async def receive(self, text_data):
         """ Receive message from websocket frontend """
         text_data_json = json.loads(text_data)
@@ -132,6 +132,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "msg_type": "error",
                 "error": "You are not logged in"
             }))
+
+    # Custom helper functions for connect, disconnect, and receive
 
     # Receive message from room group
     async def create_chat_message(self, event):
@@ -174,7 +176,7 @@ def create_room(name):
 
 @database_sync_to_async
 def connect_user(room, user):
-    """ ChatRoom method to connect user to room in many-to-many relationship """
+    """ ChatRoom method to connect user to room - many-to-many """
     return room.connect_user(user)
 
 
@@ -212,17 +214,18 @@ def get_room_chat_messages(room):
         # Get all messages in room
         qs = ChatMessage.objects.by_room(room)
         # Paginate queryset for number of messages per page (hardcoded as 5)
-        paginator = Paginator(qs, 5)
+        pag = Paginator(qs, 5)
 
         payload = {}
-        if paginator.num_pages >= 1:
+        if pag.num_pages >= 1:
             # Use custom serializer to get messages in json format
             # messages are in reverse order so get page 1
-            payload["messages"] = PayloadSerializer().serialize(paginator.page(1).object_list)
+            ps = PayloadSerializer()
+            payload["messages"] = ps.serialize(pag.page(1).object_list)
         else:
             payload["messages"] = "None"
         # Find last page if db has messages or else page 1
-        payload["pageNum"] = ceil(paginator.count / 5) if paginator.count > 0 else 1
+        payload["pageNum"] = ceil(pag.count / 5) if pag.count > 0 else 1
         # Put into json format in order to send back to consumer
         return json.dumps(payload)
     except Exception as e:

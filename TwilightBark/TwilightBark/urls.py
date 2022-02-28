@@ -33,4 +33,5 @@ urlpatterns = [
 
 if settings.DEBUG:
     # Add media files to search path (as seen in settings.py)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

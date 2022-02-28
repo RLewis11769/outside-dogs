@@ -33,7 +33,7 @@ class PayloadSerializer(Serializer):
     """ Very literal serializing of queryset obj to correct format """
 
     def get_dump_object(self, qs=None):
-        """ Modification of default method to create serialized queryset object """
+        """ Modify default method to create serialized queryset object """
         obj = {}
         obj.update({'message': str(qs.message)})
         obj.update({'user': str(qs.user.username)})

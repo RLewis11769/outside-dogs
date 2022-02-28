@@ -17,19 +17,24 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChatRoom',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, unique=True)),
-                ('users', models.ManyToManyField(blank=True, help_text='Users connected to chat room', to=settings.AUTH_USER_MODEL)),
+                ('users', models.ManyToManyField(blank=True, help_text='Users connected to chat room',
+                                                 to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='ChatMessage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('message', models.TextField()),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('room', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='chat.ChatRoom')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('room', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                           to='chat.ChatRoom')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                           to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

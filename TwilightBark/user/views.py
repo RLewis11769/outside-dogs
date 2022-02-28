@@ -1,8 +1,8 @@
 """ Defines what each page looks like - matches url to html file """
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from .forms import RegistrationForm, UserAuthenticationForm, AccountUpdateForm
 from .models import User
 from .utils import get_redirect_destination
@@ -134,6 +134,7 @@ def edit_account(request, *args, **kwargs):
         form = AccountUpdateForm(request.POST, request.FILES,
                                  instance=request.user)
         if form.is_valid():
+            # Save data in form (profile_pic remains as default idk)
             form.save()
             return redirect('user:account', user_id=user.id)
         else:
@@ -158,5 +159,4 @@ def edit_account(request, *args, **kwargs):
                                  'hide_email': user.hide_email
                                  })
         context['form'] = form
-    context['DATA_UPLOAD_MAX_MEMORY_SIZE'] = settings.DATA_UPLOAD_MAX
     return render(request, 'user/account_edit.html', context)

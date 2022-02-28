@@ -1,13 +1,14 @@
-""" Defines classes for forms """
+""" Defines fields, methods, etc for form classess """
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import UserCreationForm
 from .models import User
 
 
 class RegistrationForm(UserCreationForm):
     """ Modify default UserCreationForm to include email """
 
+    # Adding this field to default fields
     email = forms.EmailField(max_length=255,
                              help_text='Require valid email address.')
 
@@ -41,6 +42,7 @@ class RegistrationForm(UserCreationForm):
 
 class UserAuthenticationForm(forms.ModelForm):
     """ Define form for user authentication """
+
     # widget handles rendering - password widget obscures input
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
@@ -100,6 +102,7 @@ class AccountUpdateForm(forms.ModelForm):
         # Update with new cleaned data
         user.username = self.cleaned_data['username']
         user.email = self.cleaned_data['email'].lower()
+        # profile_pic is working in admin but not account_update frontend
         user.profile_pic = self.cleaned_data['profile_pic']
         user.hide_email = self.cleaned_data['hide_email']
         # commit=True is default, so will be committing to db

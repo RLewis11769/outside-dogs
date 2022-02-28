@@ -1,10 +1,11 @@
 """ Define models for chat room system - room and messages """
-from django.db import models
 from django.conf import settings
+from django.db import models
 
 
 class ChatRoom(models.Model):
     """ Chat room model to hold Users and provide group for ChatMessages """
+
     name = models.CharField(max_length=100, unique=True, blank=False)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True,
                                    help_text='Users connected to chat room')
@@ -31,14 +32,14 @@ class ChatRoom(models.Model):
             is_user_removed = True
         return is_user_removed
 
-    @property
-    def group_name(self):
-        """ Group name for socketio to subscribe to and send messages to """
-        return f"ChatRoom-{self.id}"
+    # @property
+    # def group_name(self):
+    #     """ Group name for socketio to subscribe to and send messages to """
+    #     return f"ChatRoom-{self.id}"
 
 
 class MessageManager(models.Manager):
-    """ Message manager to return messages by room """
+    """ Message manager to return messages by room - link models """
 
     def by_room(self, room):
         """ Get messages by room - ordered by latest first """

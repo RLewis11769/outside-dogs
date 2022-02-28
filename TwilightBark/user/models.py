@@ -1,6 +1,7 @@
 """ Define User models for basic user and admin user """
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+# from PIL import Image
 
 
 class AccountManager(BaseUserManager):
@@ -56,7 +57,7 @@ class User(AbstractBaseUser):
     date_joined = models.DateTimeField(verbose_name='date joined',
                                        auto_now_add=True)
     profile_pic = models.ImageField(max_length=200,
-                                    upload_to='profile_images', blank=True,
+                                    upload_to='profile_images',
                                     default='default_pic.png')
     hide_email = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -74,9 +75,7 @@ class User(AbstractBaseUser):
 
     def get_profile_pic_filename(self):
         """ Return user-defined profile pic name that is default overridden """
-        # Take everything from profile_pic field after profile_images/id
-        return (str(self.profile_pic)[str(self.profile_pic)
-                .index(f'profile_images/{self.id}/'):])
+        return (str(self.profile_pic))
 
     # These are more default methods that need to be overridden
     def __str__(self):
@@ -90,3 +89,16 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         """ Checks if user has permission to view app at all """
         return True
+
+    # # Raises error but this is how you might resize profile pic (Pillow)
+    # def save(self):
+    #     """ Override save method to resize profile pic """
+    #     super().save()
+    #     # Get existing image
+    #     img = Image.open(self.profile_pic.path)
+    #     # If larger than 300px x 300px, resize
+    #     if img.height > 300 or img.width > 300:
+    #         new_size = (300, 300)
+    #         img.thumbnail(new_size)
+    #         # Save resized image
+    #         img.save(self.profile_pic.path)

@@ -153,6 +153,3 @@ STATIC_URL = '/static/'
 # Tell Django media file location directory
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/profile_images/'
-
-# Define max size of file upload
-DATA_UPLOAD_MAX = 10485760  # aka max 10MB

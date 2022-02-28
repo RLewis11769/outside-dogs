@@ -1,7 +1,7 @@
-""" Define admin panel for chat room system """
+""" Define admin panel view for chat room system """
 from django.contrib import admin
-from django.core.paginator import Paginator
 from django.core.cache import cache
+from django.core.paginator import Paginator
 from .models import ChatRoom, ChatMessage
 
 
@@ -28,12 +28,12 @@ class CachingPaginator(Paginator):
         if self._count is None:
             try:
                 # Set key to cache count
-                key = "adm:{0}:count".format(hash(self.object_list.query.__str__()))
+                key = f"adm:{hash(self.object_list.query.__str__())}:count"
                 self._count = cache.get(key, -1)
                 if self._count == -1:
                     self._count = super().count
                     cache.set(key, self._count, 3600)
-            except:
+            except Exception as e:
                 self._count = len(self.object_list)
             return self._count
 

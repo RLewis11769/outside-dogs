@@ -2,7 +2,7 @@
 
 
 def get_profile_pic(self):
-    """ Return profile pic filepath """
+    """ Return profile pic filepath - not using this function """
     return f'profile_images/{self.id}/{"profile_pic.png"}'
 
 
